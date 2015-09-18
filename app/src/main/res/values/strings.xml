@@ -1,13 +1,33 @@
 <resources>
     <string name="app_name">Android Translate</string>
 
-    <string name="tutorial">Выбирите языки</string>
+    <string name="tutorial">Выбирите язык</string>
+
+    <string name="tutorialFrom">Выбирите язык из которого перевести</string>
+
+    <string name="tutorialAt">Выбирите язык в который перевести</string>
+    
+    <string name="buttonSumbit">Ввести текст -></string>
+    
     <string name="action_settings">Settings</string>
 
 
     <string-array name="array_languages">
-        <item title="a">1</item>
-        <item title="b">2</item>
+        <item>Английский</item>
+        <item>Арабский</item>
+        <item>Голландский</item>
+        <item>Греческий</item>
+        <item>Датский</item>
+        <item>Иврит</item>
+        <item>Ирландский</item>
+        <item>Итальянский</item>
+        <item>Китайский</item>
+        <item>Корейский</item>
+        <item>Латынь</item>
+        <item>Немецкий</item>
+        <item>Русский</item>
+        <item>Французский</item>
+        <item>Японский</item>
     </string-array>
 
 </resources>
