@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Android Translate</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="tutorial">Выбирите языки</string>
     <string name="action_settings">Settings</string>
+
+
+    <string-array name="array_languages">
+        <item title="a">1</item>
+        <item title="b">2</item>
+    </string-array>
+
 </resources>
