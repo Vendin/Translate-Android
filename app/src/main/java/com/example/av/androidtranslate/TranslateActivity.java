@@ -3,6 +3,7 @@ package com.example.av.androidtranslate;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,9 +27,25 @@ import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
+/*
+Переключение тредов идёт примерно так:
+
+TranslateActivity        NetworkThread              UIThread (OutputSetter)
+    |                           |                       |
+    |                           |                       |
+translate -------------->      run ___________          |
+    |                                        |          |
+    |                                        |          |
+    |                    getAPIResponse  <---|          |
+    |                           |                       |
+    |                           |-----------------> setOutput
+    |                                                   |
+    |                                                   |
+ */
+
+
 public class TranslateActivity extends AppCompatActivity {
-    private final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02\n" +
-            ".b4f643f222a54b8ff78e7a738fe291d8a76f511a";
+    private final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02.b4f643f222a54b8ff78e7a738fe291d8a76f511a";
 
     private String langFrom;
     private String langTo;
@@ -65,7 +82,7 @@ public class TranslateActivity extends AppCompatActivity {
         setLangFrom("английский", "en");
         setLangTo("русский", "ru");
 
-        inputEdit.setText("Shall so come in like manner as ye have seen him.");
+        inputEdit.setText("Shall so come in like manner as ye have seen him");
 
         translate();
     }
@@ -98,53 +115,85 @@ public class TranslateActivity extends AppCompatActivity {
         this.langToCode = langToCode;
     }
 
-    // TODO: Сделать с помощью многопоточности
-    // TODO: Нормальная обработка Exception-ов
-    @Nullable
-    private String getAPIResponse() {
-        StringBuilder result = new StringBuilder();
-        try {
-            URIBuilder builder = new URIBuilder("https://translate.yandex.net/api/v1.5/tr.json/translate");
-            builder.addParameter("key", key);
-            builder.addParameter("lang", String.format(Locale.getDefault(), "%s-%s", langFromCode, langToCode));
-            builder.addParameter("text", inputEdit.getText().toString());
+    class NetworkThread extends Thread {
+        private TranslateActivity callback;
 
-            URL url = builder.build().toURL();
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-            rd.close();
-            return result.toString();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        NetworkThread(TranslateActivity parentActivity) {
+            callback = parentActivity;
         }
-        return null;
+
+        @Override
+        public void run() {
+            callback.dispatchAPIResponse(getAPIResponse());
+        }
+
+        // TODO: Нормальная обработка Exception-ов
+        @Nullable
+        private String getAPIResponse() {
+            StringBuilder result = new StringBuilder();
+            try {
+                URIBuilder builder = new URIBuilder("https://translate.yandex.net/api/v1.5/tr.json/translate");
+                builder.addParameter("key", key);
+                builder.addParameter("lang", String.format(Locale.getDefault(), "%s-%s", langFromCode, langToCode));
+                builder.addParameter("text", inputEdit.getText().toString());
+
+                URL url = builder.build().toURL();
+                Log.v("formed url", url.toString());
+
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                Log.v("Response code:", String.valueOf(connection.getResponseCode()));
+
+                BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                while ((line = rd.readLine()) != null) {
+                    result.append(line);
+                }
+                rd.close();
+                return result.toString();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
-    // TODO: Сделать с помощью многопоточности
-    // TODO: Нормальная обработка исключений
     private void translate() {
-        String response = getAPIResponse();
+        NetworkThread thread = new NetworkThread(this);
+        thread.start();
+    }
+
+    // TODO: Нормальная обработка исключений
+    public void dispatchAPIResponse(String apiResponse) {
         try {
-            JSONObject result = new JSONObject(response);
+            JSONObject result = new JSONObject(apiResponse);
             int code = result.getInt("code");
             if (HttpURLConnection.HTTP_OK == code) {
                 String text = result.getJSONArray("text").getString(0);
-                setOutput(text);
+                TranslateActivity.this.runOnUiThread(new TranslateActivity.OutputSetter(text));
             } else {
                 // TODO: failed
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    class OutputSetter implements Runnable {
+        private String out;
+        OutputSetter(String output) {
+            out = output;
+        }
+
+        public void run() {
+            TranslateActivity.this.setOutput(out);
         }
     }
 
