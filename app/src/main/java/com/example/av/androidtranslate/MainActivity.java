@@ -93,16 +93,11 @@ public class MainActivity extends AppCompatActivity {
     public void dispatchAPIResponse(String apiResponse) {
         try {
             JSONObject result = new JSONObject(apiResponse);
-            int code = result.getInt("code");
-            if (HttpURLConnection.HTTP_OK == code) {
-                Object text = result.getJSONObject("langs");
-                Log.e("Response code:", String.valueOf(text.toString()));
-                Toast toast = Toast.makeText(getApplicationContext(), text.toString(), Toast.LENGTH_SHORT);
-                toast.show();
-                //MainActivity.this.runOnUiThread(new TranslateActivity.OutputSetter(text));
-            } else {
-                // TODO: failed
-            }
+            JSONObject text = result.getJSONObject("langs");
+            Log.e("Response code:", String.valueOf(text.get("af")));
+            Toast toast = Toast.makeText(getApplicationContext(), text.toString(), Toast.LENGTH_SHORT);
+            toast.show();
+            //MainActivity.this.runOnUiThread(new TranslateActivity.OutputSetter(text));
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
@@ -116,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
 class NetworkThread extends Thread {
     private MainActivity callback;
-    private final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02b4f643f222a54b8ff78e7a738fe291d8a76f511a";
+    private final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02.b4f643f222a54b8ff78e7a738fe291d8a76f511a";
 
     NetworkThread(MainActivity act){
         callback = act;
