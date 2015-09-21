@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Spinner spinner1 = (Spinner)findViewById(R.id.spinner1);
                 Spinner spinner2 = (Spinner)findViewById(R.id.spinner2);
-                spinner1.
+
                 String fromAt =  hashMapLanguage.get(spinner1.getSelectedItemPosition()) + "-" + hashMapLanguage.get(spinner2.getSelectedItemPosition());
 
                 Toast toast = Toast.makeText(getApplicationContext(), fromAt, Toast.LENGTH_SHORT);

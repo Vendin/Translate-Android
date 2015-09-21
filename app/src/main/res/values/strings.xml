@@ -32,4 +32,5 @@
         <item>Японский</item>
     </string-array>
 
+    <string name="title_activity_translate">TranslateActivity</string>
 </resources>
