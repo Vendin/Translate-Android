@@ -7,12 +7,13 @@
 
     <string name="tutorialAt">Выбирите язык в который перевести</string>
     
-    <string name="buttonSumbit">Ввести текст -></string>
+    <string name="buttonSumbit">Ввести текст</string>
     
     <string name="action_settings">Settings</string>
 
 
     <string-array name="array_languages">
+        <item>Выберите язык</item>
         <item>Английский</item>
         <item>Арабский</item>
         <item>Голландский</item>
@@ -25,6 +26,7 @@
         <item>Корейский</item>
         <item>Латынь</item>
         <item>Немецкий</item>
+        <item>Норвежский</item>
         <item>Русский</item>
         <item>Французский</item>
         <item>Японский</item>
