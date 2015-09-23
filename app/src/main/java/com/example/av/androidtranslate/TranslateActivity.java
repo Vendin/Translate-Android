@@ -135,32 +135,18 @@ public class TranslateActivity extends AppCompatActivity {
         networkThreadTranslate.start();
     }
 
-    // TODO: Нормальная обработка исключений
-    public void dispatchAPIResponse(String apiResponse) {
-        try {
-            JSONObject result = new JSONObject(apiResponse);
-            int code = result.getInt("code");
-            if (HttpURLConnection.HTTP_OK == code) {
-                String text = result.getJSONArray("text").getString(0);
-                TranslateActivity.this.runOnUiThread(new TranslateActivity.OutputSetter(text));
-            } else {
-                // TODO: failed
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
 
-    class OutputSetter implements Runnable {
+
+    public static class OutputSetter implements Runnable {
         private String out;
-        OutputSetter(String output) {
+        private TranslateActivity parent;
+        OutputSetter(String output, TranslateActivity parent) {
+            this.parent = parent;
             out = output;
         }
 
         public void run() {
-            TranslateActivity.this.setOutput(out);
+            parent.setOutput(out);
         }
     }
 
