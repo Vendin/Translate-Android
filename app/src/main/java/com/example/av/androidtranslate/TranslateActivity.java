@@ -1,5 +1,6 @@
 package com.example.av.androidtranslate;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,7 +30,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 /*
 Переключение тредов идёт примерно так:
-
 TranslateActivity        NetworkThread              UIThread (OutputSetter)
     |                           |                       |
     |                           |                       |
@@ -45,7 +45,8 @@ translate -------------->      run ___________          |
 
 
 public class TranslateActivity extends AppCompatActivity {
-    private final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02.b4f643f222a54b8ff78e7a738fe291d8a76f511a";
+
+    NetworkThreadTranslate networkThreadTranslate;
 
     private String langFrom;
     private String langTo;
@@ -74,15 +75,29 @@ public class TranslateActivity extends AppCompatActivity {
         exchangeButton.setOnClickListener(new ExchangeListener());
     }
 
+    public String getLangFromCode(){
+        return  langFromCode;
+    }
+
+    public String getLangToCode(){
+        return  langToCode;
+    }
+
+    public EditText getInputEdit(){
+        return  inputEdit;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
 
         //TODO: get parameters from intent and saved instance state
-        setLangFrom("английский", "en");
-        setLangTo("русский", "ru");
+        Intent intent = getIntent();
 
-        inputEdit.setText("Shall so come in like manner as ye have seen him");
+        setLangFrom(intent.getStringExtra("langForm"), intent.getStringExtra("langFormCode"));
+        setLangTo(intent.getStringExtra("langTo"), intent.getStringExtra("langToCode"));
+
+        inputEdit.setText("منزل");
 
         translate();
     }
@@ -115,57 +130,9 @@ public class TranslateActivity extends AppCompatActivity {
         this.langToCode = langToCode;
     }
 
-    class NetworkThread extends Thread {
-        private TranslateActivity callback;
-
-        NetworkThread(TranslateActivity parentActivity) {
-            callback = parentActivity;
-        }
-
-        @Override
-        public void run() {
-            callback.dispatchAPIResponse(getAPIResponse());
-        }
-
-        // TODO: Нормальная обработка Exception-ов
-        @Nullable
-        private String getAPIResponse() {
-            StringBuilder result = new StringBuilder();
-            try {
-                URIBuilder builder = new URIBuilder("https://translate.yandex.net/api/v1.5/tr.json/translate");
-                builder.addParameter("key", key);
-                builder.addParameter("lang", String.format(Locale.getDefault(), "%s-%s", langFromCode, langToCode));
-                builder.addParameter("text", inputEdit.getText().toString());
-
-                URL url = builder.build().toURL();
-                Log.v("formed url", url.toString());
-
-                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-
-                Log.v("Response code:", String.valueOf(connection.getResponseCode()));
-
-                BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    result.append(line);
-                }
-                rd.close();
-                return result.toString();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
     private void translate() {
-        NetworkThread thread = new NetworkThread(this);
-        thread.start();
+        networkThreadTranslate = new NetworkThreadTranslate(this);
+        networkThreadTranslate.start();
     }
 
     // TODO: Нормальная обработка исключений
