@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int GET_LANGS = 0;
 
     private NetworkThreadMain networkThread;
     private HashMap<String, String> mapLanguage;
@@ -75,31 +76,45 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);
-                Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
-                langFrom = spinner1.getSelectedItem().toString();
-                langTo = spinner2.getSelectedItem().toString();
-                langFromCode =  mapLanguage.get(langFrom);
-                langToCode = mapLanguage.get(langTo);
-
-                String fromAt = langFrom + " " + langFromCode + " : " + langTo + " " + langToCode;
-
-
-
-                Toast toast = Toast.makeText(getApplicationContext(), fromAt, Toast.LENGTH_SHORT);
-                toast.show();
-
-                Intent intent = new Intent(MainActivity.this, TranslateActivity.class);
-                intent.putExtra("langForm", langFrom);
-                intent.putExtra("langFormCode", langFromCode);
-                intent.putExtra("langTo", langTo);
-                intent.putExtra("langToCode", langToCode);
-                startActivity(intent);
-
+                sendData();
             }
         });
 
+    }
+
+    private void sendData() {
+        Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);
+        Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+        langFrom = spinner1.getSelectedItem().toString();
+        langTo = spinner2.getSelectedItem().toString();
+        langFromCode =  mapLanguage.get(langFrom);
+        langToCode = mapLanguage.get(langTo);
+
+        String fromAt = langFrom + " " + langFromCode + " : " + langTo + " " + langToCode;
+
+        Toast toast = Toast.makeText(getApplicationContext(), fromAt, Toast.LENGTH_SHORT);
+        toast.show();
+
+        Intent intent;
+
+        boolean isCalledFromOutside = (getIntent().hasExtra("requestCode") &&
+                getIntent().getIntExtra("requestCode", 0) == GET_LANGS);
+        if (isCalledFromOutside)  {
+            intent = new Intent();
+        } else {
+            intent = new Intent(MainActivity.this, TranslateActivity.class);
+        }
+
+        intent.putExtra("langForm", langFrom);
+        intent.putExtra("langFormCode", langFromCode);
+        intent.putExtra("langTo", langTo);
+        intent.putExtra("langToCode", langToCode);
+
+        if (isCalledFromOutside) {
+            setResult(RESULT_OK, intent);
+        } else {
+            startActivity(intent);
+        }
     }
 
     @Override

@@ -45,7 +45,6 @@ translate -------------->      run ___________          |
 
 
 public class TranslateActivity extends AppCompatActivity {
-
     NetworkThreadTranslate networkThreadTranslate;
 
     private String langFrom;
@@ -55,7 +54,7 @@ public class TranslateActivity extends AppCompatActivity {
 
     private TextView langFromView, langToView;
     private EditText inputEdit, outputEdit;
-    private Button exchangeButton, translateButton;
+    private Button exchangeButton, translateButton, chooseLangButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +69,11 @@ public class TranslateActivity extends AppCompatActivity {
 
         exchangeButton = (Button) findViewById(R.id.exchange);
         translateButton = (Button) findViewById(R.id.translate);
+        chooseLangButton = (Button) findViewById(R.id.choose_lang);
 
         translateButton.setOnClickListener(new TranslateListener());
         exchangeButton.setOnClickListener(new ExchangeListener());
+        chooseLangButton.setOnClickListener(new ChooseLangListener());
     }
 
     public String getLangFromCode(){
@@ -131,23 +132,21 @@ public class TranslateActivity extends AppCompatActivity {
     }
 
     private void translate() {
-        networkThreadTranslate = new NetworkThreadTranslate(this);
+        networkThreadTranslate = new NetworkThreadTranslate(langFromCode, langToCode,
+                inputEdit.getText().toString());
         networkThreadTranslate.start();
-    }
 
+        try {
+            networkThreadTranslate.join();
 
-
-    public static class OutputSetter implements Runnable {
-        private String out;
-        private TranslateActivity parent;
-        OutputSetter(String output, TranslateActivity parent) {
-            this.parent = parent;
-            out = output;
+            String tranlsation = networkThreadTranslate.getTranslation();
+            if (tranlsation != null){
+                setOutput(tranlsation);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        public void run() {
-            parent.setOutput(out);
-        }
     }
 
     public void setOutput(String output) {
@@ -157,6 +156,14 @@ public class TranslateActivity extends AppCompatActivity {
     class TranslateListener implements Button.OnClickListener {
         public void onClick(View v) {
             TranslateActivity.this.translate();
+        }
+    }
+
+    class ChooseLangListener implements Button.OnClickListener {
+        public void onClick(View v) {
+            Intent i = new Intent(TranslateActivity.this, MainActivity.class);
+            i.putExtra("requestCode", MainActivity.GET_LANGS);
+            startActivityForResult(i, MainActivity.GET_LANGS);
         }
     }
 
@@ -179,6 +186,16 @@ public class TranslateActivity extends AppCompatActivity {
 
             TranslateActivity.this.setLangTo(fromBuffer, fromCodeBuffer);
             TranslateActivity.this.translate();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MainActivity.GET_LANGS && resultCode == RESULT_OK) {
+
         }
     }
 }
