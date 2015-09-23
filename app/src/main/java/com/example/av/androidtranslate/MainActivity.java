@@ -37,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
 
     private NetworkThreadMain networkThread;
     private HashMap<String, String> mapLanguage;
+    private String langFrom;
+    private String langTo;
+    private String langFromCode;
+    private String langToCode;
 
 
     @Override
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        networkThread = new NetworkThreadMain(this);
+        networkThread = new NetworkThreadMain();
 
         networkThread.start();
         try {
@@ -74,13 +78,23 @@ public class MainActivity extends AppCompatActivity {
 
                 Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);
                 Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
+                langFrom = spinner1.getSelectedItem().toString();
+                langTo = spinner2.getSelectedItem().toString();
+                langFromCode =  mapLanguage.get(langFrom);
+                langToCode = mapLanguage.get(langTo);
 
-                String fromAt = mapLanguage.get(spinner1.getSelectedItem().toString()) + "-" + mapLanguage.get(spinner2.getSelectedItem().toString());
+                String fromAt = langFrom + " " + langFromCode + " : " + langTo + " " + langToCode;
+
+
 
                 Toast toast = Toast.makeText(getApplicationContext(), fromAt, Toast.LENGTH_SHORT);
                 toast.show();
 
                 Intent intent = new Intent(MainActivity.this, TranslateActivity.class);
+                intent.putExtra("langForm", langFrom);
+                intent.putExtra("langFormCode", langFromCode);
+                intent.putExtra("langTo", langTo);
+                intent.putExtra("langToCode", langToCode);
                 startActivity(intent);
 
             }

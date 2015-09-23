@@ -1,5 +1,6 @@
 package com.example.av.androidtranslate;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -91,10 +92,12 @@ public class TranslateActivity extends AppCompatActivity {
         super.onResume();
 
         //TODO: get parameters from intent and saved instance state
-        setLangFrom("английский", "en");
-        setLangTo("русский", "ru");
+        Intent intent = getIntent();
 
-        inputEdit.setText("Shall so come in like manner as ye have seen him");
+        setLangFrom(intent.getStringExtra("langForm"), intent.getStringExtra("langFormCode"));
+        setLangTo(intent.getStringExtra("langTo"), intent.getStringExtra("langToCode"));
+
+        inputEdit.setText("منزل");
 
         translate();
     }

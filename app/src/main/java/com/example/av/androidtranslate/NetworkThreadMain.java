@@ -20,15 +20,10 @@ import java.util.Iterator;
 import javax.net.ssl.HttpsURLConnection;
 
 class NetworkThreadMain extends Thread {
-    private MainActivity callbackMainActivity;
 
     private HashMap<String, String> listLanguage;
     private final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02.b4f643f222a54b8ff78e7a738fe291d8a76f511a";
 
-
-    NetworkThreadMain(MainActivity act){
-        callbackMainActivity = act;
-    }
 
 
     public HashMap<String, String> getListLanguage(){
