@@ -87,17 +87,17 @@ public class TranslateActivity extends AppCompatActivity {
         return  inputEdit;
     }
 
+    public EditText getOutputEdit() {
+        return outputEdit;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-
-        //TODO: get parameters from intent and saved instance state
         Intent intent = getIntent();
 
         setLangFrom(intent.getStringExtra("langForm"), intent.getStringExtra("langFormCode"));
         setLangTo(intent.getStringExtra("langTo"), intent.getStringExtra("langToCode"));
-
-        inputEdit.setText("منزل");
 
         translate();
     }
@@ -167,6 +167,16 @@ public class TranslateActivity extends AppCompatActivity {
 
             TranslateActivity.this.setLangFrom(TranslateActivity.this.langTo,
                     TranslateActivity.this.langToCode);
+
+            EditText input = TranslateActivity.this.getInputEdit();
+            String inputBuffer = input.getText().toString();
+
+            EditText output = TranslateActivity.this.getOutputEdit();
+            String outputBuffer = output.getText().toString();
+
+            input.setText(outputBuffer);
+            output.setText(inputBuffer);
+
             TranslateActivity.this.setLangTo(fromBuffer, fromCodeBuffer);
             TranslateActivity.this.translate();
         }
