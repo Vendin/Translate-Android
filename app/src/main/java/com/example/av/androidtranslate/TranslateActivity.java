@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
@@ -74,6 +75,8 @@ public class TranslateActivity extends AppCompatActivity {
         translateButton.setOnClickListener(new TranslateListener());
         exchangeButton.setOnClickListener(new ExchangeListener());
         chooseLangButton.setOnClickListener(new ChooseLangListener());
+
+        fetchDataFromIntent(getIntent());
     }
 
     public String getLangFromCode(){
@@ -92,13 +95,11 @@ public class TranslateActivity extends AppCompatActivity {
         return outputEdit;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Intent intent = getIntent();
-
+    private void fetchDataFromIntent(Intent intent) {
         setLangFrom(intent.getStringExtra("langForm"), intent.getStringExtra("langFormCode"));
         setLangTo(intent.getStringExtra("langTo"), intent.getStringExtra("langToCode"));
+
+        Log.v("r", intent.getStringExtra("langForm"));
 
         translate();
     }
@@ -195,7 +196,7 @@ public class TranslateActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == MainActivity.GET_LANGS && resultCode == RESULT_OK) {
-
+            fetchDataFromIntent(data);
         }
     }
 }

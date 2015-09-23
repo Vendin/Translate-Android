@@ -90,30 +90,38 @@ public class MainActivity extends AppCompatActivity {
         langFromCode =  mapLanguage.get(langFrom);
         langToCode = mapLanguage.get(langTo);
 
-        String fromAt = langFrom + " " + langFromCode + " : " + langTo + " " + langToCode;
+        if (langToCode != null && langFromCode != null) {
 
-        Toast toast = Toast.makeText(getApplicationContext(), fromAt, Toast.LENGTH_SHORT);
-        toast.show();
+            String fromAt = langFrom + " " + langFromCode + " : " + langTo + " " + langToCode;
 
-        Intent intent;
+            Toast toast = Toast.makeText(getApplicationContext(), fromAt, Toast.LENGTH_SHORT);
+            toast.show();
 
-        boolean isCalledFromOutside = (getIntent().hasExtra("requestCode") &&
-                getIntent().getIntExtra("requestCode", 0) == GET_LANGS);
-        if (isCalledFromOutside)  {
-            intent = new Intent();
+            Intent intent;
+
+            boolean isCalledFromOutside = (getIntent().hasExtra("requestCode") &&
+                    getIntent().getIntExtra("requestCode", 0) == GET_LANGS);
+            if (isCalledFromOutside) {
+                intent = new Intent();
+            } else {
+                intent = new Intent(MainActivity.this, TranslateActivity.class);
+            }
+
+            intent.putExtra("langForm", langFrom);
+            intent.putExtra("langFormCode", langFromCode);
+            intent.putExtra("langTo", langTo);
+            intent.putExtra("langToCode", langToCode);
+
+            if (isCalledFromOutside) {
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                startActivity(intent);
+            }
         } else {
-            intent = new Intent(MainActivity.this, TranslateActivity.class);
-        }
-
-        intent.putExtra("langForm", langFrom);
-        intent.putExtra("langFormCode", langFromCode);
-        intent.putExtra("langTo", langTo);
-        intent.putExtra("langToCode", langToCode);
-
-        if (isCalledFromOutside) {
-            setResult(RESULT_OK, intent);
-        } else {
-            startActivity(intent);
+            String message = "Выберите язык!";
+            Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 
