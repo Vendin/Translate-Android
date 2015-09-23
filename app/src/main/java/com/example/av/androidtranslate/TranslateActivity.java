@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
@@ -45,7 +46,6 @@ translate -------------->      run ___________          |
 
 
 public class TranslateActivity extends AppCompatActivity {
-
     NetworkThreadTranslate networkThreadTranslate;
 
     private String langFrom;
@@ -55,7 +55,7 @@ public class TranslateActivity extends AppCompatActivity {
 
     private TextView langFromView, langToView;
     private EditText inputEdit, outputEdit;
-    private Button exchangeButton, translateButton;
+    private Button exchangeButton, translateButton, chooseLangButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +70,13 @@ public class TranslateActivity extends AppCompatActivity {
 
         exchangeButton = (Button) findViewById(R.id.exchange);
         translateButton = (Button) findViewById(R.id.translate);
+        chooseLangButton = (Button) findViewById(R.id.choose_lang);
 
         translateButton.setOnClickListener(new TranslateListener());
         exchangeButton.setOnClickListener(new ExchangeListener());
+        chooseLangButton.setOnClickListener(new ChooseLangListener());
+
+        fetchDataFromIntent(getIntent());
     }
 
     public String getLangFromCode(){
@@ -87,17 +91,15 @@ public class TranslateActivity extends AppCompatActivity {
         return  inputEdit;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    public EditText getOutputEdit() {
+        return outputEdit;
+    }
 
-        //TODO: get parameters from intent and saved instance state
-        Intent intent = getIntent();
-
+    private void fetchDataFromIntent(Intent intent) {
         setLangFrom(intent.getStringExtra("langForm"), intent.getStringExtra("langFormCode"));
         setLangTo(intent.getStringExtra("langTo"), intent.getStringExtra("langToCode"));
 
-        inputEdit.setText("منزل");
+        Log.v("r", intent.getStringExtra("langForm"));
 
         translate();
     }
@@ -131,37 +133,21 @@ public class TranslateActivity extends AppCompatActivity {
     }
 
     private void translate() {
-        networkThreadTranslate = new NetworkThreadTranslate(this);
+        networkThreadTranslate = new NetworkThreadTranslate(langFromCode, langToCode,
+                inputEdit.getText().toString());
         networkThreadTranslate.start();
-    }
 
-    // TODO: Нормальная обработка исключений
-    public void dispatchAPIResponse(String apiResponse) {
         try {
-            JSONObject result = new JSONObject(apiResponse);
-            int code = result.getInt("code");
-            if (HttpURLConnection.HTTP_OK == code) {
-                String text = result.getJSONArray("text").getString(0);
-                TranslateActivity.this.runOnUiThread(new TranslateActivity.OutputSetter(text));
-            } else {
-                // TODO: failed
+            networkThreadTranslate.join();
+
+            String tranlsation = networkThreadTranslate.getTranslation();
+            if (tranlsation != null){
+                setOutput(tranlsation);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
 
-    class OutputSetter implements Runnable {
-        private String out;
-        OutputSetter(String output) {
-            out = output;
-        }
-
-        public void run() {
-            TranslateActivity.this.setOutput(out);
-        }
     }
 
     public void setOutput(String output) {
@@ -174,6 +160,14 @@ public class TranslateActivity extends AppCompatActivity {
         }
     }
 
+    class ChooseLangListener implements Button.OnClickListener {
+        public void onClick(View v) {
+            Intent i = new Intent(TranslateActivity.this, MainActivity.class);
+            i.putExtra("requestCode", MainActivity.GET_LANGS);
+            startActivityForResult(i, MainActivity.GET_LANGS);
+        }
+    }
+
     class ExchangeListener implements Button.OnClickListener {
         public void onClick(View v) {
             String fromBuffer = TranslateActivity.this.langFrom;
@@ -181,8 +175,28 @@ public class TranslateActivity extends AppCompatActivity {
 
             TranslateActivity.this.setLangFrom(TranslateActivity.this.langTo,
                     TranslateActivity.this.langToCode);
+
+            EditText input = TranslateActivity.this.getInputEdit();
+            String inputBuffer = input.getText().toString();
+
+            EditText output = TranslateActivity.this.getOutputEdit();
+            String outputBuffer = output.getText().toString();
+
+            input.setText(outputBuffer);
+            output.setText(inputBuffer);
+
             TranslateActivity.this.setLangTo(fromBuffer, fromCodeBuffer);
             TranslateActivity.this.translate();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MainActivity.GET_LANGS && resultCode == RESULT_OK) {
+            fetchDataFromIntent(data);
         }
     }
 }
