@@ -100,6 +100,8 @@ public class TranslateActivity extends AppCompatActivity {
         setLangTo(intent.getStringExtra("langTo"), intent.getStringExtra("langToCode"));
 
         Log.v("r", intent.getStringExtra("langForm"));
+        inputEdit.setText("");
+
 
         translate();
     }

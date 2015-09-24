@@ -17,7 +17,7 @@
     </style>
     
     <style name="buttonNext">
-        <item name="android:textSize">17dp</item>
+        <item name="android:textSize">20dp</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:background">#f7f7f7</item>
         <item name="android:textColor">#ff0000</item>
@@ -25,6 +25,22 @@
         <item name="android:topLeftRadius">5dp</item>
         <item name="android:bottomRightRadius">5dp</item>
         <item name="android:bottomLeftRadius">5dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingTop">13dp</item>
     </style>
+
+    <style name="TextView">
+        <item name="android:textColor">#ff0000</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+
+    <style name="EditText">
+        <item name="android:hint">Enter the text</item>
+    </style>
+
 
 </resources>
