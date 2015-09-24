@@ -11,6 +11,8 @@
     
     <string name="action_settings">Settings</string>
 
+    <string name="z">↔</string>
+
 
     <string-array name="array_languages">
         <item>Выберите язык</item>

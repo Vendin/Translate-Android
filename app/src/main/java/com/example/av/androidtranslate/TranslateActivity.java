@@ -97,7 +97,7 @@ public class TranslateActivity extends AppCompatActivity {
         setLangFrom(intent.getStringExtra("langForm"), intent.getStringExtra("langFormCode"));
         setLangTo(intent.getStringExtra("langTo"), intent.getStringExtra("langToCode"));
 
-        inputEdit.setText("منزل");
+        inputEdit.setText("");
 
         translate();
     }
