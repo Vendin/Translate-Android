@@ -35,4 +35,7 @@
     </string-array>
 
     <string name="title_activity_translate">TranslateActivity</string>
+    <string name="title_activity_loading">LoadingActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

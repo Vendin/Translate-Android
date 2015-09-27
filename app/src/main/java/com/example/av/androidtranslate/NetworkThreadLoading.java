@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 import javax.net.ssl.HttpsURLConnection;
 
-class NetworkThreadMain extends NetworkThread {
+class NetworkThreadLoading extends NetworkThread {
 
     private HashMap<String, String> listLanguage;
     public HashMap<String, String> getListLanguage(){

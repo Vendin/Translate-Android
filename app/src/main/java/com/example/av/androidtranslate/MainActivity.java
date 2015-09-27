@@ -36,7 +36,6 @@ import javax.net.ssl.HttpsURLConnection;
 public class MainActivity extends AppCompatActivity {
     public static final int GET_LANGS = 0;
 
-    private NetworkThreadMain networkThread;
     private HashMap<String, String> mapLanguage;
     private String langFrom;
     private String langTo;
@@ -49,19 +48,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        networkThread = new NetworkThreadMain();
 
-        networkThread.start();
-        try {
-            networkThread.join();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        networkThread.getListLanguage();
         Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);
         Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
         List<String> list = new ArrayList<String>();
-        mapLanguage = networkThread.getListLanguage();
+        mapLanguage = (HashMap<String, String>) getIntent().getSerializableExtra("listLanguages");
+
         list.add("Выберете язык");
         for(Map.Entry<String, String> entity : mapLanguage.entrySet()){
             list.add(entity.getKey());
