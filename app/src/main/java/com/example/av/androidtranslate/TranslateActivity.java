@@ -1,7 +1,6 @@
 package com.example.av.androidtranslate;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,43 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.utils.URIBuilder;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Locale;
-
-import javax.net.ssl.HttpsURLConnection;
-
-/*
-Переключение тредов идёт примерно так:
-TranslateActivity        NetworkThread              UIThread (OutputSetter)
-    |                           |                       |
-    |                           |                       |
-translate -------------->      run ___________          |
-    |                                        |          |
-    |                                        |          |
-    |                    getAPIResponse  <---|          |
-    |                           |                       |
-    |                           |-----------------> setOutput
-    |                                                   |
-    |                                                   |
- */
-
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 public class TranslateActivity extends AppCompatActivity {
-    NetworkThreadTranslate networkThreadTranslate;
-
     private String langFrom;
     private String langTo;
     private String langFromCode;
@@ -57,10 +24,14 @@ public class TranslateActivity extends AppCompatActivity {
     private EditText inputEdit, outputEdit;
     private Button exchangeButton, translateButton, chooseLangButton;
 
+    public final Bus bus = new Bus();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_translate);
+
+        bus.register(this);
 
         langFromView = (TextView) findViewById(R.id.fromLanguage);
         langToView = (TextView) findViewById(R.id.toLanguage);
@@ -77,6 +48,17 @@ public class TranslateActivity extends AppCompatActivity {
         chooseLangButton.setOnClickListener(new ChooseLangListener());
 
         fetchDataFromIntent(getIntent());
+    }
+
+    @Subscribe
+    public void translationReceived(String translation) {
+        setOutput(translation);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        bus.unregister(this);
     }
 
     public String getLangFromCode(){
@@ -101,7 +83,6 @@ public class TranslateActivity extends AppCompatActivity {
 
         Log.v("r", intent.getStringExtra("langForm"));
         inputEdit.setText("");
-
 
         translate();
     }
@@ -135,21 +116,8 @@ public class TranslateActivity extends AppCompatActivity {
     }
 
     private void translate() {
-        networkThreadTranslate = new NetworkThreadTranslate(langFromCode, langToCode,
-                inputEdit.getText().toString());
-        networkThreadTranslate.start();
-
-        try {
-            networkThreadTranslate.join();
-
-            String tranlsation = networkThreadTranslate.getTranslation();
-            if (tranlsation != null){
-                setOutput(tranlsation);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+       TranslateAsyncTask.translate(bus, langFromCode, langToCode,
+               inputEdit.getText().toString());
     }
 
     public void setOutput(String output) {
@@ -172,6 +140,7 @@ public class TranslateActivity extends AppCompatActivity {
 
     class ExchangeListener implements Button.OnClickListener {
         public void onClick(View v) {
+            Log.i("OK1","");
             String fromBuffer = TranslateActivity.this.langFrom;
             String fromCodeBuffer = TranslateActivity.this.langFromCode;
 
@@ -180,7 +149,7 @@ public class TranslateActivity extends AppCompatActivity {
 
             EditText input = TranslateActivity.this.getInputEdit();
             String inputBuffer = input.getText().toString();
-
+            Log.i("OK2","");
             EditText output = TranslateActivity.this.getOutputEdit();
             String outputBuffer = output.getText().toString();
 
@@ -189,6 +158,7 @@ public class TranslateActivity extends AppCompatActivity {
 
             TranslateActivity.this.setLangTo(fromBuffer, fromCodeBuffer);
             TranslateActivity.this.translate();
+            Log.i("OK3", "");
         }
     }
 

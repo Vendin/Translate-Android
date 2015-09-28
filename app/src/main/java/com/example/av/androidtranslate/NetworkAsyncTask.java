@@ -1,5 +1,6 @@
 package com.example.av.androidtranslate;
 
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -21,19 +22,12 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by mihanik on 23.09.15.
  */
-public abstract class NetworkThread extends Thread {
-    protected final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02.b4f643f222a54b8ff78e7a738fe291d8a76f511a";
+public  abstract class NetworkAsyncTask <Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+    protected static final String key = "trnsl.1.1.20150920T100138Z.be418cc4b6842e02.b4f643f222a54b8ff78e7a738fe291d8a76f511a";
+    protected abstract URL getApiUrl();
 
-    @Override
-    final public void run() {
-        getAPIResponse();
-    }
-
-    protected abstract void dispatchAPIResponse(@Nullable String apiResponse);
-    protected abstract URL getApiUrl() throws URISyntaxException, MalformedURLException;
-
-
-    private void getAPIResponse() {
+    @Nullable
+    public String getAPIResponse() {
         String result = null;
         try {
             URL url = getApiUrl();
@@ -49,13 +43,9 @@ public abstract class NetworkThread extends Thread {
             }
             rd.close();
             result = responseBuilder.toString();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        dispatchAPIResponse(result);
+        return result;
     }
 }

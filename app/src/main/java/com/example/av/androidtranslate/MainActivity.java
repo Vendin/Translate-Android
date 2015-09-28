@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);
         Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
         List<String> list = new ArrayList<String>();
-        mapLanguage = (HashMap<String, String>) getIntent().getSerializableExtra("listLanguages");
+        mapLanguage = LoadingActivity.listLanguages;
 
         list.add("Выберете язык");
         for(Map.Entry<String, String> entity : mapLanguage.entrySet()){
