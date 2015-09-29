@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Translate-Android.iml" filepath="$PROJECT_DIR$/Translate-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AndroidTranslate.iml" filepath="$PROJECT_DIR$/AndroidTranslate.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

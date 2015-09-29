@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -51,18 +52,22 @@ public class MainActivity extends AppCompatActivity {
 
         Spinner spinner1 = (Spinner) findViewById(R.id.spinner1);
         Spinner spinner2 = (Spinner) findViewById(R.id.spinner2);
-        List<String> list = new ArrayList<String>();
+        List<String> listFrom = new ArrayList<String>();
         mapLanguage = LoadingActivity.listLanguages;
 
-        list.add("Выберете язык");
+        listFrom.add("Выберете язык из которого перевести");
         for(Map.Entry<String, String> entity : mapLanguage.entrySet()){
-            list.add(entity.getKey());
+            listFrom.add(entity.getKey());
         }
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> dataAdapterFrom = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listFrom);
+        dataAdapterFrom.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner1.setAdapter(dataAdapterFrom);
 
-        spinner1.setAdapter(dataAdapter);
-        spinner2.setAdapter(dataAdapter);
+        List<String> listTo = new ArrayList<>(listFrom);
+        listTo.set(0, "Выберете язык в который перевести");
+        ArrayAdapter<String> dataAdapterTo = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listTo);
+        dataAdapterTo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(dataAdapterTo);
 
         Button button = (Button)findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -86,11 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
             String fromAt = langFrom + " " + langFromCode + " : " + langTo + " " + langToCode;
 
-            Toast toast = Toast.makeText(getApplicationContext(), fromAt, Toast.LENGTH_SHORT);
-            toast.show();
-
             Intent intent;
-
             boolean isCalledFromOutside = (getIntent().hasExtra("requestCode") &&
                     getIntent().getIntExtra("requestCode", 0) == GET_LANGS);
             if (isCalledFromOutside) {
@@ -116,27 +117,4 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 }
