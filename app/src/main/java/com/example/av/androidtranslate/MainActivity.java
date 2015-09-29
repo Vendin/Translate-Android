@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -55,10 +56,13 @@ public class MainActivity extends AppCompatActivity {
         List<String> listFrom = new ArrayList<String>();
         mapLanguage = LoadingActivity.listLanguages;
 
-        listFrom.add("Выберете язык из которого перевести");
+
         for(Map.Entry<String, String> entity : mapLanguage.entrySet()){
             listFrom.add(entity.getKey());
         }
+        Collections.sort(listFrom);
+        listFrom.add(0, "Выберете язык из которого перевести");
+
         ArrayAdapter<String> dataAdapterFrom = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listFrom);
         dataAdapterFrom.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(dataAdapterFrom);
