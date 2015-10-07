@@ -14,7 +14,19 @@
         android:fontFamily="sans-serif-light"
         android:textSize="18dp"
         android:textColor="#ff0000"
-        android:layout_centerVertical="true"
+        android:id="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="229dp" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="31dp"
+        android:indeterminateDrawable="@drawable/spinner_ring"
+        android:indeterminate="true"
+        android:id="@+id/progressBar"
+        android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

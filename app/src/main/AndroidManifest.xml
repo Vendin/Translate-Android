@@ -12,7 +12,7 @@
 
         <activity
             android:name=".LoadingActivity"
-            android:label="@string/title_activity_loading" >
+            android:label="Translate" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

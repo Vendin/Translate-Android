@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -21,6 +23,9 @@ public class LoadingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
 
+        ProgressBar diagProgress = (ProgressBar) findViewById(R.id.progressBar);
+        diagProgress.setVisibility(View.VISIBLE);
+
         bus.register(this);
         LoadLanguagesTask.load();
     }
@@ -31,11 +36,6 @@ public class LoadingActivity extends AppCompatActivity {
         bus.unregister(this);
     }
 
-    @Subscribe
-    public void progressAvailable(String event) {
-        Toast t = Toast.makeText(this, event, Toast.LENGTH_SHORT);
-        t.show();
-    }
 
     @Subscribe
     public void resultAvailable(@Nullable HashMap<String, String> loadedResult) {

@@ -1,5 +1,6 @@
 package com.example.av.androidtranslate;
 
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -21,9 +22,9 @@ class LoadLanguagesTask extends NetworkAsyncTask<Void, String, HashMap<String, S
     private static Object synchronizer = new Object();
 
     public static void load() {
-        if (singleton == null) {
+        if (singleton == null  || singleton.getStatus() == Status.FINISHED) {
             synchronized (synchronizer) {
-                if (singleton == null) {
+                if (singleton == null || singleton.getStatus() == Status.FINISHED) {
                     singleton = new LoadLanguagesTask();
                     singleton.execute((Void) null);
                 }
