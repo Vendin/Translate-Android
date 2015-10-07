@@ -64,14 +64,13 @@ public class MainActivity extends AppCompatActivity {
         spinner1.setAdapter(dataAdapter);
         spinner2.setAdapter(dataAdapter);
 
-        Button button = (Button)findViewById(R.id.button);
+        Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendData();
             }
         });
-
     }
 
     private void sendData() {

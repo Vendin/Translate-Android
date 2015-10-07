@@ -17,7 +17,7 @@ import java.util.Iterator;
  */
 class LoadLanguagesTask extends NetworkAsyncTask<Void, String, HashMap<String, String>> {
     final private static URL apiURL;
-    private static LoadLanguagesTask singleton;
+    private static volatile LoadLanguagesTask singleton;
     private static Object synchronizer = new Object();
 
     public static void load() {
